@@ -1,0 +1,247 @@
+/* Феррум Строй — стили лендинга.
+   Палитра и типографика: стальной акцент на светлом фоне; кириллица
+   подхватывается Saira Condensed / IBM Plex Sans поверх Barlow / Barlow Condensed
+   (у этих шрифтов нет кириллических глифов, поэтому браузер сам берёт
+   недостающие символы из следующего шрифта в стеке). */
+
+:root {
+  --color-bg: #f2f2f3;
+  --color-surface: #e9e9ea;
+  --color-text: #1d1f20;
+  --color-accent: #5980a6;
+  --color-accent-400: #94bce3;
+  --color-accent-600: #597ea3;
+  --color-accent-700: #416180;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+
+  --color-neutral-100: #f5f5f8;
+  --color-neutral-400: #b7b7ba;
+  --color-neutral-500: #98989b;
+  --color-neutral-600: #7a7a7d;
+  --color-neutral-700: #5d5d60;
+  --color-neutral-800: #424244;
+
+  --font-heading: 'Barlow Condensed', 'Saira Condensed', sans-serif;
+  --font-body: 'Barlow', 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+h1, h2, h3 { margin: 0; font-family: var(--font-heading); line-height: 1.12; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+svg { flex: none; }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.wrap {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 28px);
+}
+
+/* — blueprint frame: hairline border + tick-mark corners — used on the logo
+   mark, buttons, cards, project tiles and the request form — */
+.blueprint { position: relative; border: 1px solid var(--color-divider); }
+.blueprint > .corner { position: absolute; width: 11px; height: 11px; color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+.blueprint > .corner::before,
+.blueprint > .corner::after { content: ""; position: absolute; background: currentColor; }
+.blueprint > .corner::before { left: 5px; top: 0; width: 1px; height: 100%; }
+.blueprint > .corner::after { top: 5px; left: 0; width: 100%; height: 1px; }
+.blueprint > .corner.tl { top: -6px; left: -6px; }
+.blueprint > .corner.tr { top: -6px; right: -6px; }
+.blueprint > .corner.bl { bottom: -6px; left: -6px; }
+.blueprint > .corner.br { bottom: -6px; right: -6px; }
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  font-size: 14px; color: var(--color-text);
+  background: transparent; border: 1px solid var(--color-divider);
+  padding: 13px 24px;
+}
+.btn-primary { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+.btn-primary:hover { background: var(--color-accent-600); }
+.btn-primary:active { background: var(--color-accent-700); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+
+/* — form fields — */
+.field { display: grid; gap: 7px; }
+.field-label {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--color-neutral-600);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 10px;
+  font-family: var(--font-body); font-size: 14px; color: var(--color-text);
+  caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 0; appearance: none;
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+input[type="tel"].input { font-family: var(--font-mono); }
+select.input { background: transparent; }
+
+/* — links that pick up the accent color on hover — */
+.link-hover:hover { color: var(--color-accent-700); }
+
+/* ── header ───────────────────────────────────────────────────────────── */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--color-divider);
+}
+.site-header .wrap {
+  padding-block: 12px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px;
+}
+.brand { display: flex; align-items: center; gap: 10px; color: var(--color-text); cursor: pointer; }
+.brand-mark { width: 34px; height: 34px; display: grid; place-items: center; flex: none; }
+.brand-name {
+  font-family: var(--font-heading); font-size: 23px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.brand-name strong { font-weight: 700; }
+
+.main-nav { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-left: auto; min-width: 0; font-size: 14px; letter-spacing: 0.02em; }
+
+.header-phone { font-family: var(--font-mono); font-size: 14px; white-space: nowrap; }
+
+/* ── hero ─────────────────────────────────────────────────────────────── */
+.hero {
+  padding-block: clamp(32px, 6vw, 64px) 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(28px, 4vw, 48px); align-items: center;
+}
+.hero-kicker {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--color-accent-700);
+  margin: 0 0 18px;
+}
+.hero-title {
+  font-family: var(--font-heading); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(40px, 5.2vw, 68px); line-height: 0.98; letter-spacing: 0.01em;
+  margin: 0 0 22px; text-wrap: balance;
+}
+.hero-title em { font-style: normal; color: var(--color-accent-700); }
+.hero-subtitle {
+  font-size: 17px; line-height: 1.62; max-width: 52ch;
+  color: var(--color-neutral-800); margin: 0 0 30px; text-wrap: pretty;
+}
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-art { position: relative; }
+.hero-svg { display: block; width: 100%; overflow: visible; cursor: pointer; }
+
+/* ── stats strip ──────────────────────────────────────────────────────── */
+.stats { margin-top: 56px; }
+.stats-grid {
+  border-top: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+.stats-item { padding: 22px 24px; border-right: 1px solid var(--color-divider); }
+.stats-item:first-child { padding-left: 0; }
+.stats-item:last-child { padding-right: 0; border-right: none; }
+.stats-label {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--color-neutral-600); margin: 0 0 8px;
+}
+.stats-value { font-family: var(--font-heading); font-size: 26px; text-transform: uppercase; }
+
+/* ── generic section header (ЛИСТ NN) ─────────────────────────────────── */
+.section { padding-block: clamp(48px, 9vw, 88px) 0; }
+.section--tight { padding-block: clamp(36px, 6vw, 60px) 0; }
+.section-header { display: flex; align-items: baseline; gap: 20px; margin-bottom: 34px; }
+.section-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em; color: var(--color-accent-700); }
+.section-title {
+  font-family: var(--font-heading); font-weight: 600; text-transform: uppercase;
+  font-size: clamp(28px, 3.4vw, 44px); line-height: 1.02; text-wrap: balance;
+}
+.section-note { font-family: var(--font-mono); font-size: 12px; color: var(--color-neutral-600); margin-left: auto; }
+
+/* ── services (ЛИСТ 01) ───────────────────────────────────────────────── */
+.services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 26px; }
+.service-card { padding: 26px; display: flex; flex-direction: column; gap: 6.8px; }
+.service-card svg { margin-bottom: 18px; }
+.service-title { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 23px; margin: 0 0 8px; }
+.service-text { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* ── why us (ЛИСТ 02) ─────────────────────────────────────────────────── */
+.why-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0;
+  border-top: 1px solid var(--color-divider); border-left: 1px solid var(--color-divider);
+}
+.why-item {
+  padding: 26px 24px; display: grid; grid-template-rows: auto auto 1fr; gap: 10px;
+  border-right: 1px solid var(--color-divider); border-bottom: 1px solid var(--color-divider);
+}
+.why-num { font-family: var(--font-heading); font-size: 44px; line-height: 1; color: var(--color-accent-400); }
+.why-title { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 21px; line-height: 1.1; }
+.why-text { margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* ── skyline dividers ─────────────────────────────────────────────────── */
+.skyline { padding-block: clamp(36px, 6vw, 60px) 0; }
+.skyline svg { display: block; }
+
+/* ── process (ЛИСТ 03) ────────────────────────────────────────────────── */
+.process-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 22px; }
+.process-step { border-top: 2px solid var(--color-text); padding-top: 18px; }
+.process-axis { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.16em; color: var(--color-accent-700); margin: 0 0 12px; }
+.process-title { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 20px; margin: 0 0 8px; }
+.process-text { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--color-neutral-700); }
+
+/* ── objects (ЛИСТ 04) ────────────────────────────────────────────────── */
+.objects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px; }
+.object-card { margin: 0; padding: 0; }
+.object-image {
+  aspect-ratio: 4 / 3; display: grid; place-items: center;
+  border-bottom: 1px dashed var(--color-neutral-400);
+}
+.object-image svg { width: 70%; }
+.object-card figcaption {
+  padding: 16px 18px; font-family: var(--font-heading); text-transform: uppercase; font-size: 19px;
+}
+
+/* ── request (ЛИСТ 05) ────────────────────────────────────────────────── */
+.request-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; align-items: start; }
+.request-intro { display: grid; gap: 22px; }
+.request-text { margin: 0; font-size: 16px; line-height: 1.65; color: var(--color-neutral-800); max-width: 46ch; }
+.request-contacts { display: grid; gap: 14px; font-family: var(--font-mono); font-size: 14px; }
+.request-contacts-row { display: flex; gap: 14px; }
+.request-contacts-label { color: var(--color-neutral-600); min-width: 84px; }
+.request-form { padding: 30px; display: grid; gap: 18px; }
+.request-note { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--color-neutral-600); }
+
+/* ── footer ───────────────────────────────────────────────────────────── */
+.site-footer { margin-top: 88px; border-top: 1px solid var(--color-divider); background: var(--color-neutral-100); }
+.footer-grid {
+  padding-block: 34px 44px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; align-items: start;
+}
+.footer-brand-name { font-family: var(--font-heading); font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 10px; }
+.footer-brand-name strong { font-weight: 700; }
+.footer-brand-text { margin: 0; font-size: 14px; line-height: 1.6; color: var(--color-neutral-700); max-width: 34ch; }
+.footer-nav { display: grid; gap: 9px; font-size: 14px; }
+.footer-contacts { display: grid; gap: 9px; font-family: var(--font-mono); font-size: 14px; }
+.footer-contacts span { color: var(--color-neutral-700); }
+.footer-copyright { margin: 0; font-family: var(--font-mono); font-size: 12px; color: var(--color-neutral-600); }
