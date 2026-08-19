@@ -59,6 +59,128 @@
     });
   }
 
+  // ── Галерея объектов: карусель + модальное окно (lightbox) ──────────────
+  const gallery = document.querySelector("[data-gallery]");
+  if (gallery) {
+    const track = gallery.querySelector("[data-gallery-track]");
+    const slides = Array.from(gallery.querySelectorAll(".gallery-slide"));
+    const counter = gallery.querySelector("[data-gallery-counter]");
+    const dotsBox = gallery.querySelector("[data-gallery-dots]");
+    const total = slides.length;
+
+    const photos = slides.map((slide) => {
+      const img = slide.querySelector(".gallery-photo");
+      const cap = slide.querySelector(".gallery-caption");
+      return { src: img.getAttribute("src"), alt: img.getAttribute("alt"), caption: cap ? cap.textContent : "" };
+    });
+
+    const pad = (n) => String(n).padStart(2, "0");
+    let index = 0;
+
+    // Точки-индикаторы
+    const dots = photos.map((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "gallery-dot";
+      dot.setAttribute("role", "tab");
+      dot.setAttribute("aria-label", "Фото " + (i + 1));
+      dot.addEventListener("click", () => goTo(i));
+      dotsBox.appendChild(dot);
+      return dot;
+    });
+
+    function goTo(i) {
+      index = (i + total) % total;
+      track.style.transform = "translateX(-" + index * 100 + "%)";
+      if (counter) counter.textContent = pad(index + 1) + " / " + pad(total);
+      dots.forEach((dot, di) => dot.setAttribute("aria-selected", di === index ? "true" : "false"));
+      if (lightbox && !lightbox.hidden) showInLightbox(index);
+    }
+
+    gallery.querySelector("[data-gallery-prev]").addEventListener("click", () => goTo(index - 1));
+    gallery.querySelector("[data-gallery-next]").addEventListener("click", () => goTo(index + 1));
+
+    // Свайп по карусели
+    bindSwipe(track, {
+      left: () => goTo(index + 1),
+      right: () => goTo(index - 1),
+    });
+
+    // ── Модальное окно ──
+    const lightbox = document.querySelector("[data-lightbox]");
+    const lbImage = lightbox && lightbox.querySelector("[data-lightbox-image]");
+    const lbCaption = lightbox && lightbox.querySelector("[data-lightbox-caption]");
+    let lastFocused = null;
+
+    function showInLightbox(i) {
+      const p = photos[i];
+      lbImage.setAttribute("src", p.src);
+      lbImage.setAttribute("alt", p.alt);
+      lbCaption.textContent = p.caption;
+    }
+
+    function openLightbox(i) {
+      if (!lightbox) return;
+      lastFocused = document.activeElement;
+      goTo(i);
+      showInLightbox(index);
+      lightbox.hidden = false;
+      document.body.style.overflow = "hidden";
+      lightbox.querySelector("[data-lightbox-close]").focus();
+    }
+
+    function closeLightbox() {
+      lightbox.hidden = true;
+      document.body.style.overflow = "";
+      if (lastFocused && lastFocused.focus) lastFocused.focus();
+    }
+
+    slides.forEach((slide, i) => {
+      const img = slide.querySelector(".gallery-photo");
+      img.addEventListener("click", () => openLightbox(i));
+    });
+
+    if (lightbox) {
+      lightbox.querySelector("[data-lightbox-close]").addEventListener("click", closeLightbox);
+      lightbox.querySelector("[data-lightbox-prev]").addEventListener("click", () => goTo(index - 1));
+      lightbox.querySelector("[data-lightbox-next]").addEventListener("click", () => goTo(index + 1));
+      lightbox.addEventListener("click", (event) => {
+        // Клик по фону (не по фото/кнопкам) закрывает окно
+        if (event.target === lightbox || event.target.classList.contains("lightbox-figure")) closeLightbox();
+      });
+      bindSwipe(lbImage, {
+        left: () => goTo(index + 1),
+        right: () => goTo(index - 1),
+      });
+      document.addEventListener("keydown", (event) => {
+        if (lightbox.hidden) return;
+        if (event.key === "Escape") closeLightbox();
+        else if (event.key === "ArrowLeft") goTo(index - 1);
+        else if (event.key === "ArrowRight") goTo(index + 1);
+      });
+    }
+
+    goTo(0);
+  }
+
+  // Простой обработчик горизонтального свайпа для тач-устройств.
+  function bindSwipe(el, handlers) {
+    let startX = 0, startY = 0, tracking = false;
+    el.addEventListener("touchstart", (e) => {
+      const t = e.changedTouches[0];
+      startX = t.clientX; startY = t.clientY; tracking = true;
+    }, { passive: true });
+    el.addEventListener("touchend", (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) handlers.left(); else handlers.right();
+      }
+    }, { passive: true });
+  }
+
   const requestForm = document.querySelector(".request-form");
   if (requestForm) {
     const note = requestForm.querySelector(".request-note");

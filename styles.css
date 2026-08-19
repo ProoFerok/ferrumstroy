@@ -210,16 +210,105 @@ select.input { background: transparent; }
 .process-title { font-family: var(--font-heading); font-weight: 600; text-transform: uppercase; font-size: 20px; margin: 0 0 8px; }
 .process-text { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--color-neutral-700); }
 
-/* ── objects (ЛИСТ 04) ────────────────────────────────────────────────── */
-.objects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 26px; }
-.object-card { margin: 0; padding: 0; }
-.object-image {
-  aspect-ratio: 4 / 3; display: grid; place-items: center;
-  border-bottom: 1px dashed var(--color-neutral-400);
+/* ── objects (ЛИСТ 04) — фотогалерея-карусель ─────────────────────────── */
+.gallery { display: grid; gap: 20px; }
+.gallery-viewport {
+  position: relative; overflow: hidden;
+  background: var(--color-neutral-800);
 }
-.object-image svg { width: 70%; }
-.object-card figcaption {
-  padding: 16px 18px; font-family: var(--font-heading); text-transform: uppercase; font-size: 19px;
+.gallery-track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.4, 0.05, 0.2, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery-track { transition: none; }
+}
+.gallery-slide {
+  margin: 0; flex: 0 0 100%; position: relative;
+  aspect-ratio: 16 / 10;
+}
+.gallery-photo {
+  display: block; width: 100%; height: 100%; object-fit: cover; cursor: zoom-in;
+}
+.gallery-caption {
+  position: absolute; left: 0; bottom: 0; right: 0;
+  padding: 30px 20px 16px;
+  font-family: var(--font-heading); text-transform: uppercase;
+  font-size: clamp(18px, 2.4vw, 24px); letter-spacing: 0.02em; color: #fff;
+  background: linear-gradient(to top, rgba(20, 22, 24, 0.82), transparent);
+  pointer-events: none;
+}
+
+/* prev / next arrows over the viewport */
+.gallery-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 44px; height: 44px; display: grid; place-items: center;
+  color: var(--color-text); cursor: pointer;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  border: 1px solid var(--color-divider); backdrop-filter: blur(4px);
+  transition: background 0.15s ease;
+}
+.gallery-nav:hover { background: var(--color-bg); }
+.gallery-prev { left: 14px; }
+.gallery-next { right: 14px; }
+
+.gallery-counter {
+  position: absolute; top: 14px; right: 14px;
+  padding: 5px 10px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em;
+  color: var(--color-text); background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  border: 1px solid var(--color-divider);
+}
+
+/* dots */
+.gallery-dots { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.gallery-dot {
+  width: 34px; height: 4px; padding: 0; cursor: pointer;
+  background: var(--color-neutral-400); border: none;
+  transition: background 0.15s ease;
+}
+.gallery-dot:hover { background: var(--color-neutral-600); }
+.gallery-dot[aria-selected="true"] { background: var(--color-accent); }
+
+/* ── lightbox / модальное окно ────────────────────────────────────────── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: clamp(16px, 4vw, 48px);
+  background: rgba(16, 18, 20, 0.92);
+}
+.lightbox[hidden] { display: none; }
+.lightbox-figure { margin: 0; display: grid; gap: 14px; max-width: 100%; max-height: 100%; }
+.lightbox-image {
+  display: block; max-width: 100%; max-height: 78vh;
+  margin-inline: auto; object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.lightbox-caption {
+  text-align: center; font-family: var(--font-heading); text-transform: uppercase;
+  font-size: clamp(16px, 2.2vw, 22px); letter-spacing: 0.02em; color: #fff;
+}
+.lightbox-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 46px; height: 46px; display: grid; place-items: center;
+  color: #fff; cursor: pointer; background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  transition: background 0.15s ease;
+}
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.12); }
+.lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px; display: grid; place-items: center;
+  color: #fff; cursor: pointer; background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  transition: background 0.15s ease;
+}
+.lightbox-nav:hover { background: rgba(255, 255, 255, 0.12); }
+.lightbox-prev { left: clamp(12px, 3vw, 32px); }
+.lightbox-next { right: clamp(12px, 3vw, 32px); }
+@media (max-width: 600px) {
+  .lightbox-nav { width: 42px; height: 42px; }
+  .lightbox-prev { left: 8px; }
+  .lightbox-next { right: 8px; }
 }
 
 /* ── request (ЛИСТ 05) ────────────────────────────────────────────────── */
