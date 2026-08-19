@@ -268,63 +268,63 @@
   <div class="section-header">
     <span class="section-label">ЛИСТ 04</span>
     <h2 class="section-title">Объекты</h2>
-    <span class="section-note">место под реальные фото</span>
+    <span class="section-note">фото сданных объектов</span>
   </div>
-  <div class="objects-grid">
-    <figure class="object-card blueprint">
+
+  <div class="gallery" data-gallery>
+    <div class="gallery-viewport blueprint">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <div class="object-image">
-        <svg viewBox="0 0 200 120" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5">
-          <path d="M10 105 H190"></path><path d="M30 105 V55 H150 V105 M30 55 L90 32 L150 55"></path>
-          <path d="M160 105 V26 M172 105 V26 M160 26 H172"></path><path d="M60 105 V78 H86 V105" stroke-width="1"></path>
-        </svg>
+      <div class="gallery-track" data-gallery-track>
+        <figure class="gallery-slide">
+          <img class="gallery-photo" src="images/proizvodstvennyy-korpus.jpg" alt="Монтаж сэндвич-панелей на металлокаркас производственного корпуса" loading="eager" width="1600" height="1200">
+          <figcaption class="gallery-caption">Производственный корпус</figcaption>
+        </figure>
+        <figure class="gallery-slide">
+          <img class="gallery-photo" src="images/sklad-3.jpg" alt="Готовый складской комплекс с ленточным остеклением" loading="lazy" width="1600" height="1200">
+          <figcaption class="gallery-caption">Складской комплекс</figcaption>
+        </figure>
+        <figure class="gallery-slide">
+          <img class="gallery-photo" src="images/sklad-1.jpg" alt="Складской комплекс, обшивка стен профлистом" loading="lazy" width="1600" height="1200">
+          <figcaption class="gallery-caption">Складской комплекс</figcaption>
+        </figure>
+        <figure class="gallery-slide">
+          <img class="gallery-photo" src="images/sklad-2.jpg" alt="Монтаж металлокаркаса складского комплекса" loading="lazy" width="1600" height="1200">
+          <figcaption class="gallery-caption">Складской комплекс</figcaption>
+        </figure>
+        <figure class="gallery-slide">
+          <img class="gallery-photo" src="images/angar.jpg" alt="Монтаж арочного ангара с тентовой кровлей" loading="lazy" width="1600" height="1200">
+          <figcaption class="gallery-caption">Ангар под технику</figcaption>
+        </figure>
       </div>
-      <figcaption>Производственный корпус</figcaption>
-    </figure>
-    <figure class="object-card blueprint">
-      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <div class="object-image">
-        <svg viewBox="0 0 200 120" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5">
-          <path d="M10 105 H190"></path><path d="M20 105 V50 H180 V105 M20 50 L34 36 H166 L180 50"></path>
-          <path d="M70 105 V72 H120 V105" stroke-width="1"></path>
-        </svg>
-      </div>
-      <figcaption>Складской комплекс</figcaption>
-    </figure>
-    <figure class="object-card blueprint">
-      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <div class="object-image">
-        <svg viewBox="0 0 200 120" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5">
-          <path d="M10 105 H190"></path><path d="M35 105 V72 A65 46 0 0 1 165 72 V105"></path>
-          <path d="M55 105 V76 A45 32 0 0 1 145 76 V105" stroke-width="1" stroke-dasharray="5 5"></path>
-        </svg>
-      </div>
-      <figcaption>Ангар под технику</figcaption>
-    </figure>
-    <figure class="object-card blueprint">
-      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <div class="object-image">
-        <svg viewBox="0 0 200 120" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5">
-          <path d="M10 105 H190"></path><path d="M50 105 V26 H150 V105 M50 26 H150"></path>
-          <path d="M64 42 H84 M94 42 H114 M124 42 H140 M64 60 H84 M94 60 H114 M124 60 H140" stroke-width="1"></path>
-          <path d="M88 105 V84 H112 V105"></path>
-        </svg>
-      </div>
-      <figcaption>Административный корпус</figcaption>
-    </figure>
-    <figure class="object-card blueprint">
-      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <div class="object-image">
-        <svg viewBox="0 0 200 120" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5">
-          <path d="M10 105 H190"></path><path d="M30 105 V48 M170 105 V48 M22 48 H178"></path>
-          <path d="M30 48 L100 30 L170 48" stroke-width="1"></path>
-          <path d="M70 105 V48 M130 105 V48" stroke-width="1" stroke-dasharray="5 5"></path>
-        </svg>
-      </div>
-      <figcaption>Навес / площадка</figcaption>
-    </figure>
+
+      <button class="gallery-nav gallery-prev" type="button" aria-label="Предыдущее фото" data-gallery-prev>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 4 L7 11 L14 18"></path></svg>
+      </button>
+      <button class="gallery-nav gallery-next" type="button" aria-label="Следующее фото" data-gallery-next>
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4 L15 11 L8 18"></path></svg>
+      </button>
+      <span class="gallery-counter" data-gallery-counter aria-hidden="true">01 / 05</span>
+    </div>
+
+    <div class="gallery-dots" role="tablist" aria-label="Навигация по фото" data-gallery-dots></div>
   </div>
 </section>
+
+<div class="lightbox" data-lightbox hidden role="dialog" aria-modal="true" aria-label="Просмотр фото объекта">
+  <button class="lightbox-close" type="button" aria-label="Закрыть" data-lightbox-close>
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6 L20 20 M20 6 L6 20"></path></svg>
+  </button>
+  <button class="lightbox-nav lightbox-prev" type="button" aria-label="Предыдущее фото" data-lightbox-prev>
+    <svg width="30" height="30" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 4 L7 11 L14 18"></path></svg>
+  </button>
+  <figure class="lightbox-figure">
+    <img class="lightbox-image" src="" alt="" data-lightbox-image>
+    <figcaption class="lightbox-caption" data-lightbox-caption></figcaption>
+  </figure>
+  <button class="lightbox-nav lightbox-next" type="button" aria-label="Следующее фото" data-lightbox-next>
+    <svg width="30" height="30" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4 L15 11 L8 18"></path></svg>
+  </button>
+</div>
 
 <section id="request" class="section wrap">
   <div class="section-header">
