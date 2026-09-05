@@ -184,12 +184,67 @@
   const requestForm = document.querySelector(".request-form");
   if (requestForm) {
     const note = requestForm.querySelector(".request-note");
+    const consent = requestForm.querySelector(".consent-check");
+    const submitBtn = requestForm.querySelector("[type=submit]");
+
     requestForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      if (note) {
-        note.textContent =
-          "Заявка отправлена — в прототипе данные не уходят. Подключите обработчик при разработке.";
+      // Согласие на обработку ПДн (152-ФЗ) обязательно. Атрибут required уже
+      // блокирует нативную отправку, но дублируем проверку для явного текста.
+      if (consent && !consent.checked) {
+        consent.reportValidity && consent.reportValidity();
+        if (note) note.textContent = "Отметьте согласие на обработку персональных данных, чтобы отправить заявку.";
+        return;
       }
+      if (!requestForm.checkValidity()) {
+        requestForm.reportValidity();
+        return;
+      }
+
+      const action = requestForm.getAttribute("action") || "send.php";
+      const data = new FormData(requestForm);
+      if (submitBtn) submitBtn.disabled = true;
+      if (note) note.textContent = "Отправляем заявку…";
+
+      fetch(action, {
+        method: "POST",
+        body: data,
+        headers: { "X-Requested-With": "XMLHttpRequest", "Accept": "application/json" },
+      })
+        .then((r) => r.json().catch(() => ({ ok: r.ok })))
+        .then((res) => {
+          if (res && res.ok) {
+            if (note) note.textContent = res.message || "Спасибо! Заявка отправлена — мы свяжемся с вами.";
+            requestForm.reset();
+            // Цель Яндекс.Метрики — конверсия «оставил заявку».
+            if (typeof window.ym === "function" && window.__ymCounterId) {
+              window.ym(window.__ymCounterId, "reachGoal", "lead");
+            }
+          } else {
+            if (note) note.textContent = (res && res.message) || "Не удалось отправить. Позвоните нам, пожалуйста.";
+            if (submitBtn) submitBtn.disabled = false;
+          }
+        })
+        .catch(() => {
+          if (note) note.textContent = "Ошибка сети. Проверьте подключение или позвоните нам.";
+          if (submitBtn) submitBtn.disabled = false;
+        });
     });
+  }
+
+  // ── Уведомление об использовании cookie (152-ФЗ) ────────────────────────
+  const cookieBanner = document.querySelector("[data-cookie]");
+  if (cookieBanner) {
+    const KEY = "fs-cookie-consent";
+    let accepted = false;
+    try { accepted = localStorage.getItem(KEY) === "1"; } catch (e) { /* localStorage недоступен */ }
+    if (!accepted) cookieBanner.hidden = false;
+    const acceptBtn = cookieBanner.querySelector("[data-cookie-accept]");
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", () => {
+        try { localStorage.setItem(KEY, "1"); } catch (e) { /* игнорируем */ }
+        cookieBanner.hidden = true;
+      });
+    }
   }
 })();

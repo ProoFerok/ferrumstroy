@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /send.php
+Disallow: /leads/
+
+# Замените домен на ваш перед публикацией
+Sitemap: https://ferrumstroy.example/sitemap.xml
