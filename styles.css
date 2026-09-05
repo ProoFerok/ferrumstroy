@@ -352,6 +352,9 @@ select.input { background: transparent; }
 .consent-text { font-size: 12.5px; line-height: 1.55; color: var(--color-neutral-700); }
 .consent-text a { color: var(--color-accent-700); text-decoration: underline; text-underline-offset: 2px; }
 
+/* honeypot-поле антиспама — скрыто от людей, видно ботам */
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
 /* ── cookie-баннер ────────────────────────────────────────────────────── */
 .cookie-banner {
   position: fixed; z-index: 90;
