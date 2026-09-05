@@ -184,12 +184,37 @@
   const requestForm = document.querySelector(".request-form");
   if (requestForm) {
     const note = requestForm.querySelector(".request-note");
+    const consent = requestForm.querySelector(".consent-check");
     requestForm.addEventListener("submit", (event) => {
       event.preventDefault();
+      // Согласие на обработку ПДн (152-ФЗ) обязательно. Атрибут required уже
+      // блокирует нативную отправку, но дублируем проверку на случай прочих
+      // способов сабмита и для явного текста ошибки.
+      if (consent && !consent.checked) {
+        consent.reportValidity && consent.reportValidity();
+        if (note) note.textContent = "Отметьте согласие на обработку персональных данных, чтобы отправить заявку.";
+        return;
+      }
       if (note) {
         note.textContent =
           "Заявка отправлена — в прототипе данные не уходят. Подключите обработчик при разработке.";
       }
     });
+  }
+
+  // ── Уведомление об использовании cookie (152-ФЗ) ────────────────────────
+  const cookieBanner = document.querySelector("[data-cookie]");
+  if (cookieBanner) {
+    const KEY = "fs-cookie-consent";
+    let accepted = false;
+    try { accepted = localStorage.getItem(KEY) === "1"; } catch (e) { /* localStorage недоступен */ }
+    if (!accepted) cookieBanner.hidden = false;
+    const acceptBtn = cookieBanner.querySelector("[data-cookie-accept]");
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", () => {
+        try { localStorage.setItem(KEY, "1"); } catch (e) { /* игнорируем */ }
+        cookieBanner.hidden = true;
+      });
+    }
   }
 })();

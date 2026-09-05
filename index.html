@@ -361,6 +361,10 @@
           <option>Индивидуальный проект</option>
         </select>
       </label>
+      <label class="consent">
+        <input class="consent-check" type="checkbox" name="consent" value="1" required>
+        <span class="consent-text">Отправляя заявку, я даю согласие на обработку персональных данных и принимаю <a class="link-hover" href="privacy.html" target="_blank" rel="noopener">Политику конфиденциальности</a>.</span>
+      </label>
       <button class="btn btn-primary" type="submit">Отправить заявку</button>
       <p class="request-note">Форма в прототипе не отправляет данные — подключить обработчик при разработке.</p>
     </form>
@@ -397,9 +401,22 @@
       <a class="link-hover" href="mailto:mail@example.ru">[mail@example.ru]</a>
       <span>[адрес базы компании]</span>
     </div>
+    <div class="footer-legal-links">
+      <a class="link-hover" href="privacy.html">Политика конфиденциальности</a>
+    </div>
+  </div>
+  <div class="footer-legal wrap">
+    <p class="footer-requisites">[ООО «Феррум Строй» / ИП Фамилия И.О.] · ИНН [0000000000] · ОГРН/ОГРНИП [0000000000000] · [юридический адрес]</p>
     <p class="footer-copyright">© [2026] Феррум Строй</p>
   </div>
 </footer>
+
+<!-- Уведомление об использовании cookie (152-ФЗ) -->
+<div class="cookie-banner blueprint" data-cookie hidden>
+  <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+  <p class="cookie-text">Мы используем файлы cookie для корректной работы сайта и анализа посещаемости. Продолжая пользоваться сайтом, вы соглашаетесь с обработкой cookie и <a class="link-hover" href="privacy.html">Политикой конфиденциальности</a>.</p>
+  <button class="btn btn-primary cookie-accept" type="button" data-cookie-accept>Принять</button>
+</div>
 
 </body>
 </html>
