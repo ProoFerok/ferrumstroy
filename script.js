@@ -181,15 +181,30 @@
     }, { passive: true });
   }
 
-  const requestForm = document.querySelector(".request-form");
-  if (requestForm) {
-    const note = requestForm.querySelector(".request-note");
-    requestForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (note) {
-        note.textContent =
-          "Заявка отправлена — в прототипе данные не уходят. Подключите обработчик при разработке.";
+  // ── Конверсии: клик по «Позвонить» / «Написать» ─────────────────────────
+  // Сайт не собирает персональные данные (формы нет). Контакт идёт напрямую
+  // через телефон/почту пользователя; для рекламы фиксируем цель в Метрике.
+  document.querySelectorAll("[data-goal]").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (typeof window.ym === "function" && window.__ymCounterId) {
+        window.ym(window.__ymCounterId, "reachGoal", "contact");
       }
     });
+  });
+
+  // ── Уведомление об использовании cookie (152-ФЗ) ────────────────────────
+  const cookieBanner = document.querySelector("[data-cookie]");
+  if (cookieBanner) {
+    const KEY = "fs-cookie-consent";
+    let accepted = false;
+    try { accepted = localStorage.getItem(KEY) === "1"; } catch (e) { /* localStorage недоступен */ }
+    if (!accepted) cookieBanner.hidden = false;
+    const acceptBtn = cookieBanner.querySelector("[data-cookie-accept]");
+    if (acceptBtn) {
+      acceptBtn.addEventListener("click", () => {
+        try { localStorage.setItem(KEY, "1"); } catch (e) { /* игнорируем */ }
+        cookieBanner.hidden = true;
+      });
+    }
   }
 })();

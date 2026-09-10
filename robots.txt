@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Замените домен на ваш перед публикацией
+Sitemap: https://ferrumstroy.example/sitemap.xml
