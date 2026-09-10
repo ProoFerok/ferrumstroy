@@ -345,44 +345,24 @@
   </div>
   <div class="request-grid">
     <div class="request-intro">
-      <p class="request-text">Опишите задачу — вернёмся с решением по конструктиву и расчётом. Работаем по конструктиву: каркас, кровля, обшивка, ограждения.</p>
+      <p class="request-text">Опишите задачу — позвоните или напишите, и мы вернёмся с решением по конструктиву и расчётом. Работаем по конструктиву: каркас, кровля, обшивка, ограждения.</p>
       <div class="request-contacts">
         <div class="request-contacts-row"><span class="request-contacts-label">Телефон</span><a class="link-hover" href="tel:+70000000000">[+7 000 000-00-00]</a></div>
         <div class="request-contacts-row"><span class="request-contacts-label">E-mail</span><a class="link-hover" href="mailto:mail@example.ru">[mail@example.ru]</a></div>
         <div class="request-contacts-row"><span class="request-contacts-label">Адрес</span><span>440003, г. Пенза, ул. Мебельная, соор. 61Б</span></div>
       </div>
     </div>
-    <form class="request-form blueprint" action="send.php" method="post">
+    <div class="contact-card blueprint">
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <label class="field">
-        <span class="field-label">Имя</span>
-        <input class="input" type="text" name="name" placeholder="Как к вам обращаться" required>
-      </label>
-      <label class="field">
-        <span class="field-label">Телефон</span>
-        <input class="input" type="tel" name="phone" placeholder="+7 ___ ___-__-__" required>
-      </label>
-      <label class="field">
-        <span class="field-label">Тип объекта</span>
-        <select class="input" name="type">
-          <option>Производственный цех</option>
-          <option>Складской комплекс</option>
-          <option>Ангар / навес</option>
-          <option>Здание / АБК</option>
-          <option>Ограждение</option>
-          <option>Индивидуальный проект</option>
-        </select>
-      </label>
-      <div class="hp-field" aria-hidden="true">
-        <label>Не заполняйте это поле<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      <p class="contact-card-kicker">Заявка и расчёт</p>
+      <h3 class="contact-card-title">Обсудим ваш объект</h3>
+      <p class="contact-card-text">Позвоните или напишите — уточним вводные по площадке, посчитаем стоимость и предложим решение по конструктиву. Отвечаем по будням, выезд на объект по договорённости.</p>
+      <div class="contact-card-actions">
+        <a class="btn btn-primary" href="tel:+70000000000" data-goal="call">Позвонить</a>
+        <a class="btn btn-secondary" href="mailto:mail@example.ru" data-goal="email">Написать на e-mail</a>
       </div>
-      <label class="consent">
-        <input class="consent-check" type="checkbox" name="consent" value="1" required>
-        <span class="consent-text">Я даю <a class="link-hover" href="soglasie.html" target="_blank" rel="noopener">согласие на обработку персональных данных</a> и принимаю <a class="link-hover" href="privacy.html" target="_blank" rel="noopener">Политику конфиденциальности</a>.</span>
-      </label>
-      <button class="btn btn-primary" type="submit">Отправить заявку</button>
-      <p class="request-note">Нажимая «Отправить», вы подтверждаете согласие на обработку персональных данных.</p>
-    </form>
+      <p class="contact-card-note">Без форм и регистраций — связь напрямую удобным вам способом.</p>
+    </div>
   </div>
 </section>
 
@@ -418,7 +398,6 @@
     </div>
     <div class="footer-legal-links">
       <a class="link-hover" href="privacy.html">Политика конфиденциальности</a>
-      <a class="link-hover" href="soglasie.html">Согласие на обработку ПДн</a>
     </div>
   </div>
   <div class="footer-legal wrap">
@@ -437,7 +416,7 @@
 <!-- ── Яндекс.Метрика ────────────────────────────────────────────────────
      Вставьте номер вашего счётчика вместо 00000000 (получить: metrika.yandex.ru).
      Пока стоит заглушка — скрипт сам не загрузится, ошибок на сайте не будет.
-     Цель «lead» засчитывается при успешной отправке заявки (см. script.js). -->
+     Цель «contact» засчитывается при клике по кнопкам «Позвонить»/«Написать» (см. script.js). -->
 <script>
   (function () {
     var COUNTER_ID = 00000000; // TODO: номер счётчика Яндекс.Метрики
