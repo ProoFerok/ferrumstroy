@@ -207,4 +207,77 @@
       });
     }
   }
+
+  // ── Экспресс-чертёж: живая схема каркаса по размерам ────────────────────
+  const config = document.querySelector("[data-config]");
+  if (config) {
+    const svg     = config.querySelector("[data-config-svg]");
+    const areaOut = config.querySelector("[data-config-area]");
+    const typeSel = config.querySelector("[data-config-type]");
+    const wIn = config.querySelector("[data-config-w]");
+    const lIn = config.querySelector("[data-config-l]");
+    const hIn = config.querySelector("[data-config-h]");
+    const wVal = config.querySelector("[data-config-w-val]");
+    const lVal = config.querySelector("[data-config-l-val]");
+    const hVal = config.querySelector("[data-config-h-val]");
+    const sendBtn = config.querySelector("[data-config-send]");
+    const mailTo = (sendBtn.getAttribute("href") || "mailto:").replace(/^mailto:/, "").split("?")[0];
+
+    const map = (v, a, b, c, d) => c + (d - c) * ((v - a) / (b - a));
+
+    function render() {
+      const W = +wIn.value, L = +lIn.value, H = +hIn.value;
+      wVal.textContent = W; lVal.textContent = L; hVal.textContent = H;
+
+      const area = W * L;
+      areaOut.textContent = area.toLocaleString("ru-RU") + " м²";
+
+      // геометрия фронтального «портала»
+      const ground = 176, cx = 160;
+      const wpx = map(W, 6, 48, 74, 264);
+      const hpx = map(H, 3, 12, 44, 118);
+      const gable = wpx * 0.16;
+      const x1 = +(cx - wpx / 2).toFixed(1), x2 = +(cx + wpx / 2).toFixed(1);
+      const eave = +(ground - hpx).toFixed(1), apex = +(eave - gable).toFixed(1);
+      const midY = +((ground + eave) / 2).toFixed(1);
+
+      // раскладка колонн (рамы) по длине — чисто визуально, 3–7 шт.
+      const bays = Math.max(2, Math.min(6, Math.round(L / 12)));
+      let purlins = "";
+      for (let i = 1; i < bays; i++) {
+        const x = +(x1 + (wpx * i) / bays).toFixed(1);
+        purlins += `M${x} ${ground} V${eave} `;
+      }
+
+      svg.innerHTML =
+        `<g stroke="var(--color-text)" fill="none" stroke-linecap="square" stroke-width="1.9">` +
+          `<path d="M18 ${ground} H302"/>` +
+          `<path d="M${x1} ${ground} V${eave} M${x2} ${ground} V${eave}"/>` +
+          `<path d="M${x1} ${eave} L${cx} ${apex} L${x2} ${eave}"/>` +
+          `<path d="M${x1} ${eave} H${x2}"/>` +
+        `</g>` +
+        `<g stroke="var(--color-neutral-500)" fill="none" stroke-width="1" stroke-dasharray="3 4">${purlins}</g>` +
+        `<g stroke="var(--color-accent)" fill="none" stroke-width="1.2">` +
+          `<path d="M${x1} ${ground + 15} H${x2} M${x1} ${ground + 9} V${ground + 21} M${x2} ${ground + 9} V${ground + 21}"/>` +
+          `<path d="M${x1 - 15} ${ground} V${eave} M${x1 - 21} ${ground} H${x1 - 9} M${x1 - 21} ${eave} H${x1 - 9}"/>` +
+        `</g>` +
+        `<g fill="var(--color-accent-700)" font-family="'IBM Plex Mono', monospace" font-size="12">` +
+          `<text x="${cx}" y="${ground + 32}" text-anchor="middle">${W} м</text>` +
+          `<text x="${x1 - 25}" y="${midY}" text-anchor="end" dominant-baseline="middle">${H} м</text>` +
+        `</g>`;
+
+      // предзаполненное письмо (данные нигде не сохраняются — открывается почтовый клиент)
+      const body =
+        `Здравствуйте! Интересует объект: ${typeSel.value}.\n` +
+        `Пролёт (ширина): ${W} м\nДлина: ${L} м\nВысота: ${H} м\n` +
+        `Площадь застройки: ${area} м²\n\nПрошу рассчитать ориентировочную стоимость.`;
+      sendBtn.setAttribute(
+        "href",
+        `mailto:${mailTo}?subject=${encodeURIComponent("Заявка на расчёт объекта")}&body=${encodeURIComponent(body)}`
+      );
+    }
+
+    [typeSel, wIn, lIn, hIn].forEach((el) => el.addEventListener("input", render));
+    render();
+  }
 })();

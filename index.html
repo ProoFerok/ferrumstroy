@@ -352,16 +352,47 @@
         <div class="request-contacts-row"><span class="request-contacts-label">Адрес</span><span>440003, г. Пенза, ул. Мебельная, соор. 61Б</span></div>
       </div>
     </div>
-    <div class="contact-card blueprint">
+    <div class="contact-card blueprint" data-config>
       <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
-      <p class="contact-card-kicker">Заявка и расчёт</p>
-      <h3 class="contact-card-title">Обсудим ваш объект</h3>
-      <p class="contact-card-text">Позвоните или напишите — уточним вводные по площадке, посчитаем стоимость и предложим решение по конструктиву. Отвечаем по будням, выезд на объект по договорённости.</p>
-      <div class="contact-card-actions">
-        <a class="btn btn-primary" href="tel:+70000000000" data-goal="call">Позвонить</a>
-        <a class="btn btn-secondary" href="mailto:mail@example.ru" data-goal="email">Написать на e-mail</a>
+      <p class="contact-card-kicker">Экспресс-чертёж</p>
+      <h3 class="contact-card-title">Соберите свой каркас</h3>
+
+      <div class="config-stage">
+        <svg class="config-svg" viewBox="0 0 320 210" width="100%" role="img" aria-label="Схема каркаса по заданным размерам" data-config-svg></svg>
+        <span class="config-area" data-config-area>— м²</span>
       </div>
-      <p class="contact-card-note">Без форм и регистраций — связь напрямую удобным вам способом.</p>
+
+      <div class="config-controls">
+        <label class="config-field">
+          <span class="config-label">Тип объекта</span>
+          <select class="config-select" data-config-type>
+            <option>Производственный цех</option>
+            <option>Складской комплекс</option>
+            <option>Ангар / навес</option>
+            <option>Здание / АБК</option>
+            <option>Ограждение</option>
+            <option>Индивидуальный проект</option>
+          </select>
+        </label>
+        <label class="config-field">
+          <span class="config-label">Пролёт (ширина): <b data-config-w-val>18</b>&nbsp;м</span>
+          <input class="config-range" type="range" min="6" max="48" step="3" value="18" data-config-w>
+        </label>
+        <label class="config-field">
+          <span class="config-label">Длина: <b data-config-l-val>36</b>&nbsp;м</span>
+          <input class="config-range" type="range" min="6" max="120" step="6" value="36" data-config-l>
+        </label>
+        <label class="config-field">
+          <span class="config-label">Высота: <b data-config-h-val>6</b>&nbsp;м</span>
+          <input class="config-range" type="range" min="3" max="12" step="1" value="6" data-config-h>
+        </label>
+      </div>
+
+      <div class="contact-card-actions">
+        <a class="btn btn-primary" href="mailto:mail@example.ru" data-config-send data-goal="email">Обсудить объект</a>
+        <a class="btn btn-secondary" href="tel:+70000000000" data-goal="call">Позвонить</a>
+      </div>
+      <p class="contact-card-note">Площадь — ориентировочная. Кнопка «Обсудить объект» откроет письмо с параметрами в вашей почте: никаких форм, данные нигде не сохраняются.</p>
     </div>
   </div>
 </section>
