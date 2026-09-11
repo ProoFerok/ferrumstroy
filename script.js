@@ -371,9 +371,12 @@
         const bands = s.glaz === "Витражное остекление" ? floors * 2 : floors;
         let g = "";
         const band = Math.min(9, hpx / (bands * 2.6));
+        // Отступ окон от боковых колонн — чтобы линии не упирались в бока здания.
+        const gi = Math.min(22, wpx * 0.12);
+        const xL = r(x1 + gi), xR = r(x2 - gi);
         for (let i = 0; i < bands; i++) {
           const y = r(ground - hpx * (i + 0.62) / bands);
-          g += "M" + x1 + " " + y + " H" + x2 + " M" + x1 + " " + r(y - band) + " H" + x2 + " M" + x1 + " " + y + " V" + r(y - band) + " M" + x2 + " " + y + " V" + r(y - band) + " ";
+          g += "M" + xL + " " + y + " H" + xR + " M" + xL + " " + r(y - band) + " H" + xR + " M" + xL + " " + y + " V" + r(y - band) + " M" + xR + " " + y + " V" + r(y - band) + " ";
         }
         o.pGlaz = g;
       }
