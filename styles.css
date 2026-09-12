@@ -437,6 +437,8 @@ select.input { background: transparent; }
   background: var(--color-neutral-100);
   box-shadow: 0 8px 28px rgba(20, 22, 24, 0.14);
 }
+/* атрибут hidden должен перебивать display:flex, иначе баннер не скрыть */
+.cookie-banner[hidden] { display: none; }
 .cookie-text { margin: 0; flex: 1 1 320px; font-size: 13px; line-height: 1.55; color: var(--color-neutral-800); }
 .cookie-text a { color: var(--color-accent-700); text-decoration: underline; text-underline-offset: 2px; }
 .cookie-accept { flex: none; padding: 10px 22px; }
