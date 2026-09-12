@@ -240,7 +240,7 @@
 
     const state = {
       type: "Ангар арочный", W: 18, L: 36, H: 0,
-      roof: "Двускатная", slope: 12, bay: "6", gates: 2, gateSize: "4x4",
+      roof: "Двускатная", slope: 12, bay: "6", gates: 1, gateSize: "4x4",
       clad: "Сэндвич-панели 100 мм", glaz: "Ленточные окна", crane: "Нет",
       floors: 2, fill: "Профлист", postStep: "3", region: "III — 1,8 кПа (Пенза)",
       view: "2d"
