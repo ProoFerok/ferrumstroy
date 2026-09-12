@@ -238,6 +238,16 @@
       "Индивидуальный проект":{ f: "roof slope bay gates clad glaz crane region",  price: [15000, 42000], W: [6, 48],  L: [6, 150],  H: [3, 16] }
     };
 
+    // Материалы заполнения ограждения: список для выбора + коэффициент к цене (Профлист = 1)
+    const FILLS = [
+      "Профлист", "Профлист двусторонний", "Евроштакетник", "Штакетник горизонтальный",
+      "Жалюзи «Ранчо»", "Сварная сетка", "Сетка-рабица", "3D-сетка", "Кованые секции"
+    ];
+    const FILLK = {
+      "Профлист": 1, "Профлист двусторонний": 1.25, "Евроштакетник": 1.12, "Штакетник горизонтальный": 1.18,
+      "Жалюзи «Ранчо»": 1.35, "Сварная сетка": 0.68, "Сетка-рабица": 0.42, "3D-сетка": 0.82, "Кованые секции": 1.9
+    };
+
     const state = {
       type: "Ангар арочный", W: 18, L: 36, H: 0,
       roof: "Двускатная", slope: 12, bay: "6", gates: 1, gateSize: "4x4",
@@ -267,7 +277,7 @@
       let qty, mult = 1;
       if (fence) {
         qty = L;
-        const fillK = { "Профлист": 1, "3D-сетка": 0.82, "Сварная сетка": 0.68, "Евроштакетник": 1.12 }[s.fill] || 1;
+        const fillK = FILLK[s.fill] || 1;
         mult *= fillK * (H / 2) * (s.postStep === "2.5" ? 1.08 : 1) * (1 + (+s.gates) * 0.06);
       } else {
         qty = W * L * floors;
@@ -284,12 +294,26 @@
         ? (v / 1e6).toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + " млн"
         : Math.round(v / 1e4) * 10 + " тыс";
       const area = fence ? L * H : W * L * floors;
-      const wk = Math.max(3, Math.round(area / 420) + 3);
+      let termText;
+      if (fence) {
+        // Темп монтажа: ~10 м в день на старте, 100 м за 2–3 дня (бригада на потоке).
+        const meshFast = /сетка|рабица/i.test(s.fill);      // сетчатые заборы монтируются быстрее
+        const kovka = s.fill === "Кованые секции";          // кованые секции — медленнее
+        const lowRate = kovka ? 40 : meshFast ? 75 : 60;    // м/день (оптимистично)
+        const highRate = kovka ? 24 : meshFast ? 50 : 38;   // м/день (с запасом)
+        const g = (+s.gates) * 0.3;
+        const dLow = Math.max(1, Math.ceil(L / lowRate + g));
+        const dHigh = Math.max(dLow + 1, Math.ceil(L / highRate + g));
+        termText = dLow + "–" + dHigh + " дн.";
+      } else {
+        const wk = Math.max(3, Math.round(area / 420) + 3);
+        termText = wk + "–" + (wk + Math.max(2, Math.round(area / 300))) + " нед.";
+      }
       return {
         area,
         areaText: fence ? L.toLocaleString("ru-RU") + " м пог." : Math.round(area).toLocaleString("ru-RU") + " м²",
         priceText: fmt(low) + " – " + fmt(high) + " ₽",
-        termText: wk + "–" + (wk + Math.max(2, Math.round(area / 300))) + " нед."
+        termText
       };
     }
 
@@ -325,12 +349,32 @@
 
         // Заполнение секций (в проём ворот не заходит)
         let f = "";
-        const rows = (step) => { for (let y = railTop + step; y < railBot; y += step) { f += "M" + x1 + " " + r(y) + " H" + (gate ? gL : x2) + " "; if (gate) f += "M" + gR + " " + r(y) + " H" + x2 + " "; } };
+        const rows = (step, x0, x0g) => { for (let y = railTop + step; y < railBot - 0.5; y += step) { f += "M" + (x0 || x1) + " " + r(y) + " H" + (gate ? gL : x2) + " "; if (gate) f += "M" + gR + " " + r(y) + " H" + x2 + " "; } };
         const cols = (step, y0) => { for (let x = x1 + step; x < x2 - 1; x += step) { if (!inGate(x)) f += "M" + r(x) + " " + (y0 || railTop) + " V" + railBot + " "; } };
-        if (s.fill === "Профлист") cols(7);
-        else if (s.fill === "Евроштакетник") cols(11, r(railTop + 3));
-        else if (s.fill === "Сварная сетка") { cols(11); rows(11); }
-        else { cols(15); rows((railBot - railTop) / 3); }
+        const mesh = (step) => {
+          const d = step * 0.34;
+          for (let x = x1 + step * 0.6; x < x2; x += step) {
+            if (inGate(x)) continue;
+            for (let y = railTop + step * 0.6; y < railBot; y += step) {
+              if (y - d < railTop || y + d > railBot) continue;
+              f += "M" + r(x - d) + " " + r(y - d) + " L" + r(x + d) + " " + r(y + d) + " M" + r(x - d) + " " + r(y + d) + " L" + r(x + d) + " " + r(y - d) + " ";
+            }
+          }
+        };
+        switch (s.fill) {
+          case "Профлист": case "Профлист двусторонний": cols(7); break;
+          case "Евроштакетник": cols(11, r(railTop + 3)); break;
+          case "Штакетник горизонтальный": rows(8); break;
+          case "Жалюзи «Ранчо»": rows(6); break;
+          case "Сварная сетка": cols(11); rows(11); break;
+          case "3D-сетка": cols(15); rows((railBot - railTop) / 3); break;
+          case "Сетка-рабица": mesh(13); break;
+          case "Кованые секции":
+            cols(15);
+            { const y = r(railTop + (railBot - railTop) * 0.38); f += "M" + x1 + " " + y + " H" + (gate ? gL : x2) + " "; if (gate) f += "M" + gR + " " + y + " H" + x2 + " "; }
+            break;
+          default: cols(7);
+        }
         o.pFill = f;
 
         // Ворота с раскосинами (акцент)
@@ -457,8 +501,16 @@
         add([0, H, -L / 2], [0, H, L / 2]);
         add([0, H * 0.55, -L / 2], [0, H * 0.55, L / 2], "thin");
         add([0, 0, -L / 2], [0, 0, L / 2], "thin");
-        const dense = s.fill === "Профлист" ? 0.35 : s.fill === "Евроштакетник" ? 0.6 : 1.2;
-        for (let z = -L / 2; z <= L / 2; z += dense) add([0, 0, z], [0, H, z], "thin");
+        const horiz = s.fill === "Штакетник горизонтальный" || s.fill === "Жалюзи «Ранчо»";
+        const grid = /сетка|рабица/i.test(s.fill);
+        if (horiz) {
+          const hs = s.fill === "Жалюзи «Ранчо»" ? 0.26 : 0.34;
+          for (let y = hs; y < H; y += hs) add([0, y, -L / 2], [0, y, L / 2], "thin");
+        } else {
+          const dense = { "Профлист": 0.35, "Профлист двусторонний": 0.35, "Евроштакетник": 0.6, "Кованые секции": 0.9 }[s.fill] || (grid ? 0.5 : 1.2);
+          for (let z = -L / 2; z <= L / 2; z += dense) add([0, 0, z], [0, H, z], "thin");
+          if (grid) { for (let y = 0.4; y < H; y += 0.4) add([0, y, -L / 2], [0, y, L / 2], "thin"); }
+        }
         if (+s.gates > 0) {
           const gw = Math.min(4, L / 4);
           add([0, 0, -gw / 2], [0, H * 1.05, -gw / 2], "accent");
@@ -623,7 +675,7 @@
       if (has("roof")) fieldsBox.appendChild(selectField("roof", "Тип кровли", ["Двускатная", "Односкатная", "Арочная"]));
       if (has("slope") && roof !== "Арочная") fieldsBox.appendChild(rangeField("slope", "Уклон кровли", 5, 25, 1, "°"));
       if (has("bay")) fieldsBox.appendChild(selectField("bay", bayLabel, [["4.5", "4,5 м"], ["6", "6 м"], ["7.5", "7,5 м"], ["9", "9 м"], ["12", "12 м"]]));
-      if (has("fill")) fieldsBox.appendChild(selectField("fill", "Тип заполнения", ["Профлист", "3D-сетка", "Сварная сетка", "Евроштакетник"]));
+      if (has("fill")) fieldsBox.appendChild(selectField("fill", "Тип заполнения", FILLS));
       if (has("fill")) fieldsBox.appendChild(selectField("postStep", "Шаг столбов", [["2.5", "2,5 м"], ["3", "3 м"]]));
       if (has("gates")) fieldsBox.appendChild(rangeField("gates", gatesLabel, 0, 6, 1, ""));
       if (has("gates") && !fence && +s.gates > 0) fieldsBox.appendChild(selectField("gateSize", "Размер ворот", [["3x3", "3 × 3 м"], ["4x4", "4 × 4 м"], ["4.5x4.5", "4,5 × 4,5 м"], ["6x6", "6 × 6 м"]]));
