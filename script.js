@@ -229,7 +229,7 @@
 
     // характеристики по типам объектов: f — какие поля показываем; price — вилка ₽/м²
     const T = {
-      "Производственный цех": { f: "roof slope bay gates clad glaz crane region", price: [24000, 36000], W: [12, 48], L: [12, 120], H: [5, 14] },
+      "Производственный цех": { f: "roof slope bay gates clad glaz crane region", price: [24000, 36000], W: [12, 48], L: [12, 120], H: [5, 14], lantern: true },
       "Складской комплекс":   { f: "roof slope bay gates clad glaz region",       price: [19000, 29000], W: [9, 48],  L: [12, 150], H: [4, 14] },
       "Ангар арочный":        { f: "bay gates clad region",                        price: [12000, 20000], W: [6, 30],  L: [9, 90],   H: [0, 6],  hStep: 1, roof: "Арочная" },
       "Навес":                { f: "roof slope bay region",                        price: [6000, 11000],  W: [6, 30],  L: [6, 90],   H: [3, 9] },
@@ -374,6 +374,13 @@
 
       const hRef = roof === "Арочная" ? apex : eave;
 
+      // Аэрационный фонарь на коньке — отличительная деталь производственного цеха.
+      if (c.lantern && roof !== "Арочная") {
+        const lw = Math.min(wpx * 0.36, 92), lh = 16;
+        const lx1 = r(cx - lw / 2), lx2 = r(cx + lw / 2), lt = r(apex - lh);
+        o.pRoof += " M" + lx1 + " " + apex + " V" + lt + " H" + lx2 + " V" + apex;
+      }
+
       if (floors > 1) {
         let fl = "";
         for (let i = 1; i < floors; i++) { const y = r(ground - hpx * i / floors); fl += "M" + x1 + " " + y + " H" + x2 + " "; }
@@ -467,6 +474,14 @@
       add([-hw, 0, L / 2], [hw, 0, L / 2], "thin");
       add([-hw, 0, -L / 2], [-hw, 0, L / 2], "thin");
       add([hw, 0, -L / 2], [hw, 0, L / 2], "thin");
+      // Аэрационный фонарь на коньке — отличие производственного цеха.
+      if (c.lantern && roof !== "Арочная") {
+        const lwm = W * 0.34, lhm = Math.max(1, rise * 0.6 + 0.8);
+        const yb = Htot + rise, yt = yb + lhm, xl = -lwm / 2, xr = lwm / 2;
+        [-L / 2, L / 2].forEach((z) => { add([xl, yb, z], [xl, yt, z]); add([xr, yb, z], [xr, yt, z]); add([xl, yt, z], [xr, yt, z]); });
+        add([xl, yt, -L / 2], [xl, yt, L / 2]);
+        add([xr, yt, -L / 2], [xr, yt, L / 2]);
+      }
       if (floors > 1) {
         for (let i = 1; i < floors; i++) {
           const y = H * i;
