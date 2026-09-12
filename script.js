@@ -231,7 +231,7 @@
     const T = {
       "Производственный цех": { f: "roof slope bay gates clad glaz crane region", price: [24000, 36000], W: [12, 48], L: [12, 120], H: [5, 14] },
       "Складской комплекс":   { f: "roof slope bay gates clad glaz region",       price: [19000, 29000], W: [9, 48],  L: [12, 150], H: [4, 14] },
-      "Ангар арочный":        { f: "bay gates clad region",                        price: [12000, 20000], W: [6, 30],  L: [9, 90],   H: [3, 10], roof: "Арочная" },
+      "Ангар арочный":        { f: "bay gates clad region",                        price: [12000, 20000], W: [6, 30],  L: [9, 90],   H: [0, 6],  hStep: 1, roof: "Арочная" },
       "Навес":                { f: "roof slope bay region",                        price: [6000, 11000],  W: [6, 30],  L: [6, 90],   H: [3, 9] },
       "Здание / АБК":         { f: "roof slope floors clad glaz region",           price: [32000, 52000], W: [6, 24],  L: [6, 48],   H: [3, 4.5], hStep: 0.5 },
       "Ограждение":           { f: "fill gates",                                   price: [2200, 3600],   L: [10, 500], H: [1.5, 4], hStep: 0.5, fence: true },
@@ -239,7 +239,7 @@
     };
 
     const state = {
-      type: "Производственный цех", W: 18, L: 36, H: 6,
+      type: "Ангар арочный", W: 18, L: 36, H: 0,
       roof: "Двускатная", slope: 12, bay: "6", gates: 2, gateSize: "4x4",
       clad: "Сэндвич-панели 100 мм", glaz: "Ленточные окна", crane: "Нет",
       floors: 2, fill: "Профлист", postStep: "3", region: "III — 1,8 кПа (Пенза)",
@@ -333,42 +333,54 @@
         return o;
       }
 
-      const Htot = H * floors;
       const wpx = map(W, 6, 48, 78, 252);
-      const hpx = map(Htot, 3, 18, 40, 124);
-      const ypm = hpx / Htot, xpm = wpx / W;
-      const x1 = r(cx - wpx / 2), x2 = r(cx + wpx / 2), eave = r(ground - hpx);
-      const rise = roof === "Арочная" ? W * 0.3 : (roof === "Односкатная" ? W * Math.tan(s.slope * Math.PI / 180) : (W / 2) * Math.tan(s.slope * Math.PI / 180));
-      const risepx = Math.min(74, rise * ypm);
-      const apex = r(eave - risepx);
+      const x1 = r(cx - wpx / 2), x2 = r(cx + wpx / 2), xpm = wpx / W;
+      let eave, apex, hpx, ypm, hText;
 
       if (roof === "Арочная") {
-        o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + eave;
-        o.pRoof = "M" + x1 + " " + eave + " A " + r(wpx / 2) + " " + r(risepx) + " 0 0 1 " + x2 + " " + eave;
-        o.pEave = "M" + x1 + " " + eave + " H" + x2;
-      } else if (roof === "Односкатная") {
-        o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + apex;
-        o.pRoof = "M" + x1 + " " + eave + " L" + x2 + " " + apex;
-        o.pEave = "M" + x1 + " " + eave + " H" + x2;
+        // Полукруглый ангар: свод радиусом W/2, опираясь на стены высотой H
+        // (по умолчанию H = 0 — свод прямо от земли, без стен).
+        const radiuspx = wpx / 2;
+        let wallpx = Math.max(0, H * xpm);
+        if (wallpx + radiuspx > 150) wallpx = Math.max(0, 150 - radiuspx);
+        eave = r(ground - wallpx);
+        apex = r(eave - radiuspx);
+        hpx = ground - apex; ypm = radiuspx / (W / 2);
+        if (wallpx > 1) {
+          o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + eave;
+          o.pEave = "M" + x1 + " " + eave + " H" + x2;
+        }
+        o.pRoof = "M" + x1 + " " + eave + " A " + r(radiuspx) + " " + r(radiuspx) + " 0 0 1 " + x2 + " " + eave;
+        hText = (H + W / 2).toLocaleString("ru-RU") + " м";
       } else {
-        o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + eave;
-        o.pRoof = "M" + x1 + " " + eave + " L" + cx + " " + apex + " L" + x2 + " " + eave;
-        o.pEave = "M" + x1 + " " + eave + " H" + x2 + " M" + cx + " " + eave + " V" + apex;
+        const Htot = H * floors;
+        hpx = map(Htot, 3, 18, 40, 124);
+        ypm = hpx / Htot;
+        eave = r(ground - hpx);
+        const rise = roof === "Односкатная" ? W * Math.tan(s.slope * Math.PI / 180) : (W / 2) * Math.tan(s.slope * Math.PI / 180);
+        const risepx = Math.min(74, rise * ypm);
+        apex = r(eave - risepx);
+        if (roof === "Односкатная") {
+          o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + apex;
+          o.pRoof = "M" + x1 + " " + eave + " L" + x2 + " " + apex;
+          o.pEave = "M" + x1 + " " + eave + " H" + x2;
+        } else {
+          o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + eave;
+          o.pRoof = "M" + x1 + " " + eave + " L" + cx + " " + apex + " L" + x2 + " " + eave;
+          o.pEave = "M" + x1 + " " + eave + " H" + x2 + " M" + cx + " " + eave + " V" + apex;
+        }
+        hText = (floors > 1 ? Htot.toLocaleString("ru-RU") : H.toLocaleString("ru-RU")) + " м";
       }
 
-      if (c.f.indexOf("bay") > -1) {
-        const n = Math.min(8, Math.max(2, Math.round(L / +s.bay / 2)));
-        let b = "";
-        for (let i = 1; i < n; i++) { const x = r(x1 + (wpx * i) / n); b += "M" + x + " " + ground + " V" + eave + " "; }
-        o.pBays = b;
-      }
+      const hRef = roof === "Арочная" ? apex : eave;
+
       if (floors > 1) {
         let fl = "";
         for (let i = 1; i < floors; i++) { const y = r(ground - hpx * i / floors); fl += "M" + x1 + " " + y + " H" + x2 + " "; }
         o.pFloors = fl;
       }
-      // Остекление на 2D-чертёж не выводим — на фасаде оно читалось как лишний
-      // прямоугольник. Параметр остаётся: влияет на смету, 3D-вид и письмо.
+      // Оси рам (пунктир) и остекление на 2D-чертёж не выводим — только каркас,
+      // ворота и размеры. Эти параметры влияют на смету, 3D-вид и письмо.
       if (c.f.indexOf("gates") > -1 && +s.gates > 0) {
         const gs = (s.gateSize || "4x4").split("x").map(Number);
         const gw = Math.min(gs[0] * xpm, wpx / Math.max(1, +s.gates) - 6);
@@ -386,10 +398,10 @@
         o.pCrane = "M" + x1 + " " + y + " H" + x2 + " M" + x1 + " " + y + " V" + r(y - 6) + " M" + x2 + " " + y + " V" + r(y - 6) + " M" + cx + " " + y + " V" + r(y + 14) + " M" + r(cx - 6) + " " + r(y + 14) + " H" + r(cx + 6);
       }
       o.pDim = "M" + x1 + " " + (ground + 15) + " H" + x2 + " M" + x1 + " " + (ground + 9) + " V" + (ground + 21) + " M" + x2 + " " + (ground + 9) + " V" + (ground + 21) +
-        " M" + r(x1 - 15) + " " + ground + " V" + eave + " M" + r(x1 - 21) + " " + ground + " H" + r(x1 - 9) + " M" + r(x1 - 21) + " " + eave + " H" + r(x1 - 9);
+        " M" + r(x1 - 15) + " " + ground + " V" + hRef + " M" + r(x1 - 21) + " " + ground + " H" + r(x1 - 9) + " M" + r(x1 - 21) + " " + hRef + " H" + r(x1 - 9);
       o.wText = W + " м";
-      o.hText = (floors > 1 ? Htot.toLocaleString("ru-RU") : H.toLocaleString("ru-RU")) + " м";
-      o.hTextX = r(x1 - 25); o.hTextY = r((ground + eave) / 2);
+      o.hText = hText;
+      o.hTextX = r(x1 - 25); o.hTextY = r((ground + hRef) / 2);
       return o;
     }
 
@@ -433,7 +445,7 @@
       const nb = Math.max(1, Math.round(L / bay));
       const zs = [];
       for (let i = 0; i <= nb; i++) zs.push(-L / 2 + (L * i) / nb);
-      const rise = roof === "Арочная" ? W * 0.3 : (roof === "Односкатная" ? W * Math.tan(s.slope * Math.PI / 180) : hw * Math.tan(s.slope * Math.PI / 180));
+      const rise = roof === "Арочная" ? hw : (roof === "Односкатная" ? W * Math.tan(s.slope * Math.PI / 180) : hw * Math.tan(s.slope * Math.PI / 180));
       const Htot = H * floors;
       const profile = (z) => {
         if (roof === "Арочная") {
@@ -633,6 +645,7 @@
       });
     });
 
+    typeSel.value = state.type;
     buildFields();
     render();
     window.addEventListener("resize", () => { if (state.view === "3d") drawCanvas(); });
