@@ -354,11 +354,11 @@
         hText = (H + W / 2).toLocaleString("ru-RU") + " м";
       } else {
         const Htot = H * floors;
-        hpx = map(Htot, 3, 18, 40, 124);
+        hpx = map(Htot, 3, 18, 40, 104);
         ypm = hpx / Htot;
         eave = r(ground - hpx);
         const rise = roof === "Односкатная" ? W * Math.tan(s.slope * Math.PI / 180) : (W / 2) * Math.tan(s.slope * Math.PI / 180);
-        const risepx = Math.min(74, rise * ypm);
+        const risepx = Math.min(40, rise * ypm);
         apex = r(eave - risepx);
         if (roof === "Односкатная") {
           o.pColumns = "M" + x1 + " " + ground + " V" + eave + " M" + x2 + " " + ground + " V" + apex;
@@ -375,7 +375,7 @@
       const hRef = roof === "Арочная" ? apex : eave;
 
       // Аэрационный фонарь на коньке — отличительная деталь производственного цеха.
-      if (c.lantern && roof !== "Арочная") {
+      if (c.lantern && roof === "Двускатная") {
         const lw = Math.min(wpx * 0.36, 92), lh = 16;
         const lx1 = r(cx - lw / 2), lx2 = r(cx + lw / 2), lt = r(apex - lh);
         o.pRoof += " M" + lx1 + " " + apex + " V" + lt + " H" + lx2 + " V" + apex;
@@ -475,7 +475,7 @@
       add([-hw, 0, -L / 2], [-hw, 0, L / 2], "thin");
       add([hw, 0, -L / 2], [hw, 0, L / 2], "thin");
       // Аэрационный фонарь на коньке — отличие производственного цеха.
-      if (c.lantern && roof !== "Арочная") {
+      if (c.lantern && roof === "Двускатная") {
         const lwm = W * 0.34, lhm = Math.max(1, rise * 0.6 + 0.8);
         const yb = Htot + rise, yt = yb + lhm, xl = -lwm / 2, xr = lwm / 2;
         [-L / 2, L / 2].forEach((z) => { add([xl, yb, z], [xl, yt, z]); add([xr, yb, z], [xr, yt, z]); add([xl, yt, z], [xr, yt, z]); });
