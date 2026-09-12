@@ -302,29 +302,45 @@
       const o = { pGround: "M18 " + ground + " H302", pColumns: "", pRoof: "", pEave: "", pBays: "", pGates: "", pFloors: "", pGlaz: "", pCrane: "", pFill: "", pDim: "", wText: "", hText: "", wTextY: ground + 32, hTextX: 0, hTextY: ground };
 
       if (fence) {
-        const wpx = map(L, c.L[0], c.L[1], 110, 272);
-        const hpx = map(H, 1.5, 4, 34, 86);
+        const wpx = map(L, c.L[0], c.L[1], 132, 272);
+        const hpx = map(H, 1.5, 4, 42, 92);
         const x1 = r(cx - wpx / 2), x2 = r(cx + wpx / 2), top = r(ground - hpx);
-        const n = Math.min(12, Math.max(3, Math.round(L / +s.postStep / 4)));
+        const postTop = r(top - 7);          // столбы с колпаками чуть выше полотна
+        const railTop = top, railBot = r(ground - 7);
+
+        const gate = +s.gates > 0;
+        const gw = gate ? Math.min(wpx * 0.24, 62) : 0;
+        const gL = r(cx - gw / 2), gR = r(cx + gw / 2);
+        const inGate = (x) => gate && x > gL - 1 && x < gR + 1;
+
+        // Столбы (рядовые + столбы ворот)
+        const n = Math.min(9, Math.max(3, Math.round(wpx / 46)));
         let posts = "";
-        for (let i = 0; i <= n; i++) { const x = r(x1 + (wpx * i) / n); posts += "M" + x + " " + ground + " V" + top + " "; }
+        for (let i = 0; i <= n; i++) { const x = r(x1 + (wpx * i) / n); posts += "M" + x + " " + ground + " V" + postTop + " "; }
+        if (gate) posts += "M" + gL + " " + ground + " V" + postTop + " M" + gR + " " + ground + " V" + postTop + " ";
         o.pColumns = posts;
-        o.pEave = "M" + x1 + " " + top + " H" + x2;
+
+        // Верхняя и нижняя обвязка (рамка полотна)
+        o.pEave = "M" + x1 + " " + railTop + " H" + x2 + " M" + x1 + " " + railBot + " H" + x2;
+
+        // Заполнение секций (в проём ворот не заходит)
         let f = "";
-        if (s.fill === "Профлист") { for (let x = x1 + 6; x < x2 - 1; x += 6) f += "M" + r(x) + " " + top + " V" + ground + " "; }
-        else if (s.fill === "Евроштакетник") { for (let x = x1 + 9; x < x2 - 1; x += 9) f += "M" + r(x) + " " + top + " V" + ground + " "; }
-        else if (s.fill === "Сварная сетка") {
-          for (let x = x1 + 10; x < x2 - 1; x += 10) f += "M" + r(x) + " " + top + " V" + ground + " ";
-          for (let y = top + 10; y < ground; y += 10) f += "M" + x1 + " " + r(y) + " H" + x2 + " ";
-        } else {
-          for (let x = x1 + 14; x < x2 - 1; x += 14) f += "M" + r(x) + " " + top + " V" + ground + " ";
-          f += "M" + x1 + " " + r(top + hpx * 0.3) + " H" + x2 + " M" + x1 + " " + r(top + hpx * 0.7) + " H" + x2 + " ";
-        }
+        const rows = (step) => { for (let y = railTop + step; y < railBot; y += step) { f += "M" + x1 + " " + r(y) + " H" + (gate ? gL : x2) + " "; if (gate) f += "M" + gR + " " + r(y) + " H" + x2 + " "; } };
+        const cols = (step, y0) => { for (let x = x1 + step; x < x2 - 1; x += step) { if (!inGate(x)) f += "M" + r(x) + " " + (y0 || railTop) + " V" + railBot + " "; } };
+        if (s.fill === "Профлист") cols(7);
+        else if (s.fill === "Евроштакетник") cols(11, r(railTop + 3));
+        else if (s.fill === "Сварная сетка") { cols(11); rows(11); }
+        else { cols(15); rows((railBot - railTop) / 3); }
         o.pFill = f;
-        if (+s.gates > 0) {
-          const gw = Math.min(wpx * 0.22, 54);
-          o.pGates = "M" + r(cx - gw / 2) + " " + ground + " V" + r(top - 2) + " H" + r(cx + gw / 2) + " V" + ground + " M" + r(cx) + " " + ground + " V" + r(top - 2) + " ";
+
+        // Ворота с раскосинами (акцент)
+        if (gate) {
+          o.pGates = "M" + gL + " " + railTop + " H" + gR + " M" + gL + " " + railBot + " H" + gR +
+            " M" + r(cx) + " " + railTop + " V" + railBot +
+            " M" + gL + " " + railBot + " L" + r(cx) + " " + railTop +
+            " M" + r(cx) + " " + railBot + " L" + gR + " " + railTop + " ";
         }
+
         o.pDim = "M" + x1 + " " + (ground + 15) + " H" + x2 + " M" + x1 + " " + (ground + 9) + " V" + (ground + 21) + " M" + x2 + " " + (ground + 9) + " V" + (ground + 21) +
           " M" + r(x1 - 15) + " " + ground + " V" + top + " M" + r(x1 - 21) + " " + ground + " H" + r(x1 - 9) + " M" + r(x1 - 21) + " " + top + " H" + r(x1 - 9);
         o.wText = L.toLocaleString("ru-RU") + " м";
@@ -375,10 +391,13 @@
       const hRef = roof === "Арочная" ? apex : eave;
 
       // Аэрационный фонарь на коньке — отличительная деталь производственного цеха.
+      // Стенки фонаря опираются на скаты кровли (не висят над коньком).
       if (c.lantern && roof === "Двускатная") {
-        const lw = Math.min(wpx * 0.36, 92), lh = 16;
-        const lx1 = r(cx - lw / 2), lx2 = r(cx + lw / 2), lt = r(apex - lh);
-        o.pRoof += " M" + lx1 + " " + apex + " V" + lt + " H" + lx2 + " V" + apex;
+        const lw = Math.min(wpx * 0.34, 88), lh = 13;
+        const lx1 = r(cx - lw / 2), lx2 = r(cx + lw / 2);
+        const yBase = r(eave + (apex - eave) * (1 - lw / wpx)); // высота ската под стенкой фонаря
+        const lWall = r(apex - lh * 0.55), lTop = r(apex - lh);
+        o.pRoof += " M" + lx1 + " " + yBase + " V" + lWall + " L" + cx + " " + lTop + " L" + lx2 + " " + lWall + " V" + yBase;
       }
 
       if (floors > 1) {
