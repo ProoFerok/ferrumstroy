@@ -29,6 +29,10 @@ jobs:
         with:
           enablement: true
 
+      # Служебные файлы репозитория не публикуем на сайт (только в git).
+      - name: Strip dev-only files
+        run: rm -f CLAUDE.md
+
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
         with:
