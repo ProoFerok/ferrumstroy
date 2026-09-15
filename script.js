@@ -1,6 +1,21 @@
 "use strict";
 
 (() => {
+  // «На рынке N лет» — считаем от даты регистрации ООО автоматически,
+  // чтобы цифра не устаревала (ООО «Феррум Строй», ОГРН 1155837000274).
+  document.querySelectorAll("[data-years-since]").forEach((el) => {
+    const from = new Date(el.getAttribute("data-years-since"));
+    if (isNaN(from)) return;
+    const now = new Date();
+    let years = now.getFullYear() - from.getFullYear();
+    const anniv = new Date(now.getFullYear(), from.getMonth(), from.getDate());
+    if (now < anniv) years -= 1;
+    if (years < 1) return;
+    const m10 = years % 10, m100 = years % 100;
+    const word = m10 === 1 && m100 !== 11 ? "год" : (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? "года" : "лет");
+    el.textContent = years + " " + word;
+  });
+
   const heroSvg = document.querySelector(".hero-svg");
 
   function playHeroAnimation() {
