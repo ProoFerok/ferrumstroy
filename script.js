@@ -217,8 +217,6 @@
     const svg      = config.querySelector("[data-config-svg]");
     const canvas   = config.querySelector("[data-config-canvas]");
     const areaEl   = config.querySelector("[data-config-area]");
-    const priceEl  = config.querySelector("[data-config-price]");
-    const termEl   = config.querySelector("[data-config-term]");
     const typeSel  = config.querySelector("[data-config-type]");
     const fieldsBox = config.querySelector("[data-config-fields]");
     const view2d   = config.querySelector("[data-config-2d]");
@@ -229,7 +227,6 @@
     const T = {
       "Производственный цех": { f: "roof slope bay gates clad glaz crane region", price: [24000, 36000], W: [12, 48], L: [12, 120], H: [5, 14], lantern: true },
       "Складской комплекс":   { f: "roof slope bay gates clad glaz region",       price: [19000, 29000], W: [9, 48],  L: [12, 150], H: [4, 14] },
-      "Ангар арочный":        { f: "bay gates clad region",                        price: [12000, 20000], W: [6, 30],  L: [9, 90],   H: [0, 6],  hStep: 1, roof: "Арочная" },
       "Навес":                { f: "roof slope bay region",                        price: [6000, 11000],  W: [6, 30],  L: [6, 90],   H: [3, 9] },
       "Здание / АБК":         { f: "roof slope floors clad glaz region",           price: [32000, 52000], W: [6, 24],  L: [6, 48],   H: [3, 4.5], hStep: 0.5 },
       "Ограждение":           { f: "fill gates",                                   price: [2200, 3600],   L: [10, 500], H: [1.5, 4], hStep: 0.5, fence: true },
@@ -247,7 +244,7 @@
     };
 
     const state = {
-      type: "Ангар арочный", W: 18, L: 36, H: 0,
+      type: "Производственный цех", W: 18, L: 36, H: 6,
       roof: "Двускатная", slope: 12, bay: "6", gates: 1, gateSize: "4x4",
       clad: "Сэндвич-панели 100 мм", glaz: "Ленточные окна", crane: "Нет",
       floors: 2, fill: "Профлист", postStep: "3", region: "III — 1,8 кПа (Пенза)",
@@ -670,7 +667,7 @@
       fieldsBox.appendChild(rangeField("L", fence ? "Длина ограждения" : "Длина", c.L[0], c.L[1], fence ? 5 : 3, "м"));
       fieldsBox.appendChild(rangeField("H", hLabel, c.H[0], c.H[1], c.hStep || 1, "м"));
       if (has("floors")) fieldsBox.appendChild(rangeField("floors", "Этажность", 1, 4, 1, ""));
-      if (has("roof")) fieldsBox.appendChild(selectField("roof", "Тип кровли", ["Двускатная", "Односкатная", "Арочная"]));
+      if (has("roof")) fieldsBox.appendChild(selectField("roof", "Тип кровли", ["Двускатная", "Односкатная"]));
       if (has("slope") && roof !== "Арочная") fieldsBox.appendChild(rangeField("slope", "Уклон кровли", 5, 25, 1, "°"));
       if (has("bay")) fieldsBox.appendChild(selectField("bay", bayLabel, [["4.5", "4,5 м"], ["6", "6 м"], ["7.5", "7,5 м"], ["9", "9 м"], ["12", "12 м"]]));
       if (has("fill")) fieldsBox.appendChild(selectField("fill", "Тип заполнения", FILLS));
@@ -686,8 +683,6 @@
     function render() {
       const c = calc();
       areaEl.textContent = c.areaText;
-      priceEl.textContent = c.priceText;
-      termEl.textContent = c.termText;
       drawSvg();
       if (state.view === "3d") drawCanvas();
     }
