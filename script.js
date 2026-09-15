@@ -181,9 +181,9 @@
     }, { passive: true });
   }
 
-  // ── Конверсии: клик по «Позвонить» / «Написать» ─────────────────────────
+  // ── Конверсии: клик по «Позвонить» ──────────────────────────────────────
   // Сайт не собирает персональные данные (формы нет). Контакт идёт напрямую
-  // через телефон/почту пользователя; для рекламы фиксируем цель в Метрике.
+  // по телефону; для рекламы фиксируем цель в Метрике.
   document.querySelectorAll("[data-goal]").forEach((el) => {
     el.addEventListener("click", () => {
       if (typeof window.ym === "function" && window.__ymCounterId) {
@@ -211,7 +211,7 @@
   // ── Конфигуратор каркаса: 2D-чертёж + 3D-изометрия, смета, письмо ───────
   // Порт дизайна из Claude Design («Феррум Строй — конфигуратор»). Ванильный
   // JS: 7 типов объектов со своими полями, ориентиры площади/бюджета/срока,
-  // 2D-чертёж и вращающаяся 3D-изометрия на canvas, mailto со всеми параметрами.
+  // 2D-чертёж и вращающаяся 3D-изометрия на canvas.
   const config = document.querySelector("[data-config]");
   if (config) {
     const svg      = config.querySelector("[data-config-svg]");
@@ -221,11 +221,9 @@
     const termEl   = config.querySelector("[data-config-term]");
     const typeSel  = config.querySelector("[data-config-type]");
     const fieldsBox = config.querySelector("[data-config-fields]");
-    const sendBtn  = config.querySelector("[data-config-send]");
     const view2d   = config.querySelector("[data-config-2d]");
     const view3d   = config.querySelector("[data-config-3d]");
     const toggles  = config.querySelectorAll("[data-config-view]");
-    const mailTo   = (sendBtn.getAttribute("href") || "mailto:").replace(/^mailto:/, "").split("?")[0];
 
     // характеристики по типам объектов: f — какие поля показываем; price — вилка ₽/м²
     const T = {
@@ -685,22 +683,6 @@
       if (has("region")) fieldsBox.appendChild(selectField("region", "Снеговой район", ["II — 1,2 кПа", "III — 1,8 кПа (Пенза)", "IV — 2,4 кПа", "V — 3,2 кПа"]));
     }
 
-    function mailBody() {
-      const { c, fence, W, L, H, floors, s } = vals(), has = (k) => c.f.indexOf(k) > -1, calcR = calc();
-      return "Здравствуйте! Интересует объект: " + s.type + ".\n" +
-        (fence
-          ? "Длина ограждения: " + L + " м\nВысота: " + H + " м\nЗаполнение: " + s.fill + "\nШаг столбов: " + s.postStep + " м\nВорота/калитки: " + s.gates + " шт\n"
-          : "Пролёт (ширина): " + W + " м\nДлина: " + L + " м\n" + (has("floors") ? "Высота этажа: " + H + " м\nЭтажность: " + floors + "\n" : "Высота: " + H + " м\n") +
-            "Кровля: " + (c.roof || s.roof) + (has("slope") ? ", уклон " + s.slope + "°" : "") + "\n" +
-            (has("bay") ? "Шаг рам: " + s.bay + " м\n" : "") +
-            (has("gates") ? "Ворота: " + s.gates + " шт, " + s.gateSize.replace("x", " × ") + " м\n" : "") +
-            (has("clad") ? "Обшивка: " + s.clad + "\n" : "") +
-            (has("glaz") ? "Остекление: " + s.glaz + "\n" : "") +
-            (has("crane") ? "Кран-балка: " + s.crane + "\n" : "") +
-            (has("region") ? "Снеговой район: " + s.region + "\n" : "")) +
-        "Площадь: " + calcR.areaText + "\nОриентир по бюджету: " + calcR.priceText + "\n\nПрошу рассчитать стоимость.";
-    }
-
     function render() {
       const c = calc();
       areaEl.textContent = c.areaText;
@@ -708,7 +690,6 @@
       termEl.textContent = c.termText;
       drawSvg();
       if (state.view === "3d") drawCanvas();
-      sendBtn.setAttribute("href", "mailto:" + mailTo + "?subject=" + encodeURIComponent("Заявка на расчёт объекта") + "&body=" + encodeURIComponent(mailBody()));
     }
 
     typeSel.addEventListener("change", () => {
